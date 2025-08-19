@@ -3,14 +3,14 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 // Your Firebase configuration
-// Replace with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
+  apiKey: "AIzaSyBKoO9gxOByaeDdl4NXVUEWARi0zyng72s",
+  authDomain: "phone-case-affiliate.firebaseapp.com",
+  projectId: "phone-case-affiliate",
+  storageBucket: "phone-case-affiliate.firebasestorage.app",
+  messagingSenderId: "693131541642",
+  appId: "1:693131541642:web:236383b4ae89bd67ad0173",
+  measurementId: "G-JDT7GP8Y53"
 };
 
 // Initialize Firebase

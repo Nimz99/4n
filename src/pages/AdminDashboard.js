@@ -3,7 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, X, Save, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Save, Loader2, AlertCircle, Database } from 'lucide-react';
+import { addSampleProducts } from '../utils/addSampleProducts';
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
@@ -139,15 +140,30 @@ const AdminDashboard = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your phone case products</p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowAddForm(true)}
-            className="btn-primary flex items-center space-x-2"
-          >
-            <Plus className="h-5 w-5" />
-            <span>Add Product</span>
-          </motion.button>
+          <div className="flex space-x-3">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={async () => {
+                if (window.confirm('Add sample products to your database?')) {
+                  await addSampleProducts();
+                }
+              }}
+              className="btn-secondary flex items-center space-x-2"
+            >
+              <Database className="h-5 w-5" />
+              <span>Add Sample Data</span>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAddForm(true)}
+              className="btn-primary flex items-center space-x-2"
+            >
+              <Plus className="h-5 w-5" />
+              <span>Add Product</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Add/Edit Form Modal */}
