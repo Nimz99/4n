@@ -217,8 +217,24 @@ const ProductDetail = () => {
                     <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">4.8 (127 reviews)</span>
                   </div>
                 </div>
-                <div className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-6">
-                  ${product.price}
+                <div className="mb-6">
+                  {product.discount && product.discount > 0 ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                        ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+                      </div>
+                      <div className="text-xl text-gray-500 dark:text-gray-400 line-through">
+                        ${product.price}
+                      </div>
+                      <div className="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 text-sm font-semibold rounded">
+                        {product.discount}% OFF
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                      ${product.price}
+                    </div>
+                  )}
                 </div>
               </div>
 

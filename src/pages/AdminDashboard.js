@@ -20,12 +20,24 @@ const AdminDashboard = () => {
     category: '',
     discount: '',
     additionalImages: ['', '', '', ''],
-    comparisonData: {
-      dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
-      materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
-      gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
-      cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
-      warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
+    overview: {
+      protectionFeatures: [
+        'Military-grade drop protection up to 15 feet',
+        'Raised bezel protects camera and screen',
+        'Anti-slip grip pattern for secure handling',
+        'Shock-absorbing inner core'
+      ],
+      materialQuality: [
+        'Premium TPU outer shell',
+        'Polycarbonate inner frame',
+        'Scratch-resistant coating',
+        'UV-resistant materials'
+      ],
+      whyBuyThis: [
+        'Military-grade drop protection (15ft)',
+        'Ultra-responsive buttons',
+        'Premium materials that last'
+      ]
     }
   });
   const [error, setError] = useState('');
@@ -57,12 +69,24 @@ const AdminDashboard = () => {
       category: '',
       discount: '',
       additionalImages: ['', '', '', ''],
-      comparisonData: {
-        dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
-        materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
-        gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
-        cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
-        warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
+      overview: {
+        protectionFeatures: [
+          'Military-grade drop protection up to 15 feet',
+          'Raised bezel protects camera and screen',
+          'Anti-slip grip pattern for secure handling',
+          'Shock-absorbing inner core'
+        ],
+        materialQuality: [
+          'Premium TPU outer shell',
+          'Polycarbonate inner frame',
+          'Scratch-resistant coating',
+          'UV-resistant materials'
+        ],
+        whyBuyThis: [
+          'Military-grade drop protection (15ft)',
+          'Ultra-responsive buttons',
+          'Premium materials that last'
+        ]
       }
     });
     setEditingProduct(null);
@@ -112,13 +136,25 @@ const AdminDashboard = () => {
       discount: product.discount || '',
       createdAt: product.createdAt,
       additionalImages: product.additionalImages || ['', '', '', ''],
-      comparisonData: product.comparisonData || {
-        dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
-        materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
-        gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
-        cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
-        warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
-      }
+             overview: product.overview || {
+         protectionFeatures: [
+           'Military-grade drop protection up to 15 feet',
+           'Raised bezel protects camera and screen',
+           'Anti-slip grip pattern for secure handling',
+           'Shock-absorbing inner core'
+         ],
+         materialQuality: [
+           'Premium TPU outer shell',
+           'Polycarbonate inner frame',
+           'Scratch-resistant coating',
+           'UV-resistant materials'
+         ],
+         whyBuyThis: [
+           'Military-grade drop protection (15ft)',
+           'Ultra-responsive buttons',
+           'Premium materials that last'
+         ]
+       }
     });
     setShowAddForm(true);
   };
@@ -149,15 +185,32 @@ const AdminDashboard = () => {
     }));
   };
 
-  const handleComparisonChange = (feature, field, value) => {
+  const handleOverviewChange = (section, index, value) => {
     setFormData(prev => ({
       ...prev,
-      comparisonData: {
-        ...prev.comparisonData,
-        [feature]: {
-          ...prev.comparisonData[feature],
-          [field]: value
-        }
+      overview: {
+        ...prev.overview,
+        [section]: prev.overview[section].map((item, i) => i === index ? value : item)
+      }
+    }));
+  };
+
+  const addOverviewItem = (section) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: {
+        ...prev.overview,
+        [section]: [...prev.overview[section], '']
+      }
+    }));
+  };
+
+  const removeOverviewItem = (section, index) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: {
+        ...prev.overview,
+        [section]: prev.overview[section].filter((_, i) => i !== index)
       }
     }));
   };
@@ -392,73 +445,117 @@ const AdminDashboard = () => {
                       </div>
                     </div>
 
-                    {/* Comparison Data Section */}
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Comparison Data</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                        Set up comparison data to show why your case is better than competitors
-                      </p>
-                      
-                      <div className="space-y-6">
-                        {Object.entries(formData.comparisonData).map(([feature, data]) => (
-                          <div key={feature} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                            <h4 className="font-medium text-gray-900 dark:text-white mb-3 capitalize">
-                              {feature.replace(/([A-Z])/g, ' $1').trim()}
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                              <div>
-                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                  Our Case
-                                </label>
-                                <input
-                                  type="text"
-                                  value={data.ourCase}
-                                  onChange={(e) => handleComparisonChange(feature, 'ourCase', e.target.value)}
-                                  className="input-field text-sm"
-                                  placeholder="Our value"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                  Competitor 1
-                                </label>
-                                <input
-                                  type="text"
-                                  value={data.competitor1}
-                                  onChange={(e) => handleComparisonChange(feature, 'competitor1', e.target.value)}
-                                  className="input-field text-sm"
-                                  placeholder="Competitor value"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                  Competitor 2
-                                </label>
-                                <input
-                                  type="text"
-                                  value={data.competitor2}
-                                  onChange={(e) => handleComparisonChange(feature, 'competitor2', e.target.value)}
-                                  className="input-field text-sm"
-                                  placeholder="Competitor value"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                  Competitor 3
-                                </label>
-                                <input
-                                  type="text"
-                                  value={data.competitor3}
-                                  onChange={(e) => handleComparisonChange(feature, 'competitor3', e.target.value)}
-                                  className="input-field text-sm"
-                                  placeholder="Competitor value"
-                                />
-                              </div>
+                                         {/* Product Overview Section */}
+                     <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Product Overview</h3>
+                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                         Add protection features and material quality details for the product overview section
+                       </p>
+                       
+                       <div className="space-y-6">
+                         {/* Protection Features */}
+                         <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                           <div className="flex justify-between items-center mb-3">
+                             <h4 className="font-medium text-gray-900 dark:text-white">Protection Features</h4>
+                             <button
+                               type="button"
+                               onClick={() => addOverviewItem('protectionFeatures')}
+                               className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                             >
+                               + Add Feature
+                             </button>
+                           </div>
+                           <div className="space-y-2">
+                             {formData.overview.protectionFeatures.map((feature, index) => (
+                               <div key={index} className="flex items-center space-x-2">
+                                 <input
+                                   type="text"
+                                   value={feature}
+                                   onChange={(e) => handleOverviewChange('protectionFeatures', index, e.target.value)}
+                                   className="input-field text-sm flex-1"
+                                   placeholder="e.g., Military-grade drop protection up to 15 feet"
+                                 />
+                                 <button
+                                   type="button"
+                                   onClick={() => removeOverviewItem('protectionFeatures', index)}
+                                   className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                 >
+                                   ×
+                                 </button>
+                               </div>
+                             ))}
+                           </div>
+                         </div>
+
+                                                   {/* Material Quality */}
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div className="flex justify-between items-center mb-3">
+                              <h4 className="font-medium text-gray-900 dark:text-white">Material Quality</h4>
+                              <button
+                                type="button"
+                                onClick={() => addOverviewItem('materialQuality')}
+                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                              >
+                                + Add Feature
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {formData.overview.materialQuality.map((feature, index) => (
+                                <div key={index} className="flex items-center space-x-2">
+                                  <input
+                                    type="text"
+                                    value={feature}
+                                    onChange={(e) => handleOverviewChange('materialQuality', index, e.target.value)}
+                                    className="input-field text-sm flex-1"
+                                    placeholder="e.g., Premium TPU outer shell"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeOverviewItem('materialQuality', index)}
+                                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+
+                          {/* Why You Need to Buy This */}
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div className="flex justify-between items-center mb-3">
+                              <h4 className="font-medium text-gray-900 dark:text-white">Why You Need to Buy This</h4>
+                              <button
+                                type="button"
+                                onClick={() => addOverviewItem('whyBuyThis')}
+                                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                              >
+                                + Add Reason
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {formData.overview.whyBuyThis.map((reason, index) => (
+                                <div key={index} className="flex items-center space-x-2">
+                                  <input
+                                    type="text"
+                                    value={reason}
+                                    onChange={(e) => handleOverviewChange('whyBuyThis', index, e.target.value)}
+                                    className="input-field text-sm flex-1"
+                                    placeholder="e.g., Military-grade drop protection (15ft)"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeOverviewItem('whyBuyThis', index)}
+                                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                       </div>
+                     </div>
 
                     <div className="flex justify-end space-x-3 pt-4">
                       <button
