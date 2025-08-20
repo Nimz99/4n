@@ -17,7 +17,16 @@ const AdminDashboard = () => {
     price: '',
     imageUrl: '',
     affiliateLink: '',
-    category: ''
+    category: '',
+    discount: '',
+    additionalImages: ['', '', '', ''],
+    comparisonData: {
+      dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
+      materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
+      gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
+      cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
+      warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
+    }
   });
   const [error, setError] = useState('');
 
@@ -45,7 +54,16 @@ const AdminDashboard = () => {
       price: '',
       imageUrl: '',
       affiliateLink: '',
-      category: ''
+      category: '',
+      discount: '',
+      additionalImages: ['', '', '', ''],
+      comparisonData: {
+        dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
+        materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
+        gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
+        cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
+        warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
+      }
     });
     setEditingProduct(null);
     setShowAddForm(false);
@@ -91,7 +109,16 @@ const AdminDashboard = () => {
       imageUrl: product.imageUrl,
       affiliateLink: product.affiliateLink,
       category: product.category,
-      createdAt: product.createdAt
+      discount: product.discount || '',
+      createdAt: product.createdAt,
+      additionalImages: product.additionalImages || ['', '', '', ''],
+      comparisonData: product.comparisonData || {
+        dropProtection: { ourCase: '15ft', competitor1: '10ft', competitor2: '12ft', competitor3: '8ft' },
+        materialQuality: { ourCase: 'Premium TPU + Polycarbonate', competitor1: 'Basic TPU', competitor2: 'Silicone', competitor3: 'Plastic' },
+        gripTexture: { ourCase: 'Anti-slip Pattern', competitor1: 'Smooth', competitor2: 'Basic Texture', competitor3: 'None' },
+        cameraProtection: { ourCase: 'Raised Bezel', competitor1: 'Flush', competitor2: 'Slight Raise', competitor3: 'None' },
+        warranty: { ourCase: '2 Years', competitor1: '1 Year', competitor2: '6 Months', competitor3: 'None' }
+      }
     });
     setShowAddForm(true);
   };
@@ -112,6 +139,26 @@ const AdminDashboard = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleAdditionalImageChange = (index, value) => {
+    setFormData(prev => ({
+      ...prev,
+      additionalImages: prev.additionalImages.map((img, i) => i === index ? value : img)
+    }));
+  };
+
+  const handleComparisonChange = (feature, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      comparisonData: {
+        ...prev.comparisonData,
+        [feature]: {
+          ...prev.comparisonData[feature],
+          [field]: value
+        }
+      }
     }));
   };
 
@@ -272,6 +319,25 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Discount (%)
+                        </label>
+                        <input
+                          type="number"
+                          name="discount"
+                          value={formData.discount}
+                          onChange={handleInputChange}
+                          className="input-field"
+                          placeholder="20"
+                          step="1"
+                          min="0"
+                          max="100"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Image URL (Imgur)
                         </label>
                         <input
@@ -284,21 +350,114 @@ const AdminDashboard = () => {
                           required
                         />
                       </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Affiliate Link
+                        </label>
+                        <input
+                          type="url"
+                          name="affiliateLink"
+                          value={formData.affiliateLink}
+                          onChange={handleInputChange}
+                          className="input-field"
+                          placeholder="https://amazon.com/affiliate-link"
+                          required
+                        />
+                      </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Affiliate Link
-                      </label>
-                      <input
-                        type="url"
-                        name="affiliateLink"
-                        value={formData.affiliateLink}
-                        onChange={handleInputChange}
-                        className="input-field"
-                        placeholder="https://amazon.com/affiliate-link"
-                        required
-                      />
+
+
+                    {/* Additional Images Section */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Additional Product Images</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Add up to 4 additional images for the product detail page (Imgur URLs)
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {formData.additionalImages.map((image, index) => (
+                          <div key={index}>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              Additional Image {index + 1}
+                            </label>
+                            <input
+                              type="url"
+                              value={image}
+                              onChange={(e) => handleAdditionalImageChange(index, e.target.value)}
+                              className="input-field"
+                              placeholder={`https://i.imgur.com/additional${index + 1}.jpg`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Comparison Data Section */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Comparison Data</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Set up comparison data to show why your case is better than competitors
+                      </p>
+                      
+                      <div className="space-y-6">
+                        {Object.entries(formData.comparisonData).map(([feature, data]) => (
+                          <div key={feature} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h4 className="font-medium text-gray-900 dark:text-white mb-3 capitalize">
+                              {feature.replace(/([A-Z])/g, ' $1').trim()}
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  Our Case
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.ourCase}
+                                  onChange={(e) => handleComparisonChange(feature, 'ourCase', e.target.value)}
+                                  className="input-field text-sm"
+                                  placeholder="Our value"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  Competitor 1
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.competitor1}
+                                  onChange={(e) => handleComparisonChange(feature, 'competitor1', e.target.value)}
+                                  className="input-field text-sm"
+                                  placeholder="Competitor value"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  Competitor 2
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.competitor2}
+                                  onChange={(e) => handleComparisonChange(feature, 'competitor2', e.target.value)}
+                                  className="input-field text-sm"
+                                  placeholder="Competitor value"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                  Competitor 3
+                                </label>
+                                <input
+                                  type="text"
+                                  value={data.competitor3}
+                                  onChange={(e) => handleComparisonChange(feature, 'competitor3', e.target.value)}
+                                  className="input-field text-sm"
+                                  placeholder="Competitor value"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
                     <div className="flex justify-end space-x-3 pt-4">
@@ -361,14 +520,14 @@ const AdminDashboard = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className="h-12 w-12 rounded-lg object-cover mr-4"
-                          onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/48x48?text=Image';
-                          }}
-                        />
+                                                 <img
+                           src={product.imageUrl}
+                           alt={product.name}
+                           className="h-12 w-12 rounded-lg object-contain bg-gray-100 dark:bg-gray-700 mr-4"
+                           onError={(e) => {
+                             e.target.src = 'https://via.placeholder.com/48x48?text=Image';
+                           }}
+                         />
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {product.name}

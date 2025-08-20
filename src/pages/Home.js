@@ -144,7 +144,95 @@ const Home = () => {
         <meta name="description" content="Discover high-quality phone cases for iPhone, Samsung, OnePlus and more. Shop our curated collection of protective cases." />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Floating Circles */}
+        <motion.div
+          className="absolute top-20 left-10 w-20 h-20 bg-primary-200/20 rounded-full blur-sm"
+          animate={{
+            y: [0, -30, 0],
+            x: [0, 20, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-40 right-20 w-16 h-16 bg-blue-200/20 rounded-full blur-sm"
+          animate={{
+            y: [0, 40, 0],
+            x: [0, -30, 0],
+            scale: [1, 0.8, 1],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+        <motion.div
+          className="absolute bottom-40 left-1/4 w-24 h-24 bg-purple-200/20 rounded-full blur-sm"
+          animate={{
+            y: [0, -50, 0],
+            x: [0, 40, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4
+          }}
+        />
+        
+        {/* Gradient Orbs */}
+        <motion.div
+          className="absolute top-1/3 right-1/3 w-32 h-32 bg-gradient-to-r from-primary-400/10 to-blue-400/10 rounded-full blur-xl"
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-xl"
+          animate={{
+            scale: [1, 0.7, 1],
+            opacity: [0.2, 0.5, 0.2],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 6
+          }}
+        />
+        
+        {/* Animated Grid */}
+        <div className="absolute inset-0 opacity-5">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-primary-600/20 to-transparent"
+            animate={{
+              x: [0, 100, 0],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Hero Section */}
         <motion.div 
           className="text-center mb-12"
