@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Star, Shield, Zap, Heart, ShoppingCart, ExternalLink, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Star, Shield, Zap, Heart, ShoppingCart, ExternalLink } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
@@ -12,7 +12,6 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [activeTab, setActiveTab] = useState('overview');
 
   // Get additional images from product data or use defaults
   const additionalImages = product?.additionalImages?.filter(img => img) || [
@@ -22,59 +21,7 @@ const ProductDetail = () => {
     'https://i.imgur.com/example4.jpg'
   ];
 
-  // Get comparison data from product or use defaults
-  const getComparisonData = () => {
-    if (product?.comparisonData) {
-      return Object.entries(product.comparisonData).map(([feature, data]) => ({
-        feature: feature.replace(/([A-Z])/g, ' $1').trim(),
-        ourCase: data.ourCase,
-        competitor1: data.competitor1,
-        competitor2: data.competitor2,
-        competitor3: data.competitor3
-      }));
-    }
-    
-    // Default comparison data
-    return [
-      {
-        feature: 'Drop Protection',
-        ourCase: '15ft',
-        competitor1: '10ft',
-        competitor2: '12ft',
-        competitor3: '8ft'
-      },
-      {
-        feature: 'Material Quality',
-        ourCase: 'Premium TPU + Polycarbonate',
-        competitor1: 'Basic TPU',
-        competitor2: 'Silicone',
-        competitor3: 'Plastic'
-      },
-      {
-        feature: 'Grip Texture',
-        ourCase: 'Anti-slip Pattern',
-        competitor1: 'Smooth',
-        competitor2: 'Basic Texture',
-        competitor3: 'None'
-      },
-      {
-        feature: 'Camera Protection',
-        ourCase: 'Raised Bezel',
-        competitor1: 'Flush',
-        competitor2: 'Slight Raise',
-        competitor3: 'None'
-      },
-      {
-        feature: 'Warranty',
-        ourCase: '2 Years',
-        competitor1: '1 Year',
-        competitor2: '6 Months',
-        competitor3: 'None'
-      }
-    ];
-  };
 
-  const comparisonData = getComparisonData();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -103,6 +50,16 @@ const ProductDetail = () => {
 
   const handleBuyClick = () => {
     window.open(product.affiliateLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const handlePreviousImage = () => {
+    const allImages = [product.imageUrl, ...additionalImages];
+    setSelectedImage(selectedImage === 0 ? allImages.length - 1 : selectedImage - 1);
+  };
+
+  const handleNextImage = () => {
+    const allImages = [product.imageUrl, ...additionalImages];
+    setSelectedImage(selectedImage === allImages.length - 1 ? 0 : selectedImage + 1);
   };
 
   if (loading) {
@@ -163,26 +120,46 @@ const ProductDetail = () => {
               transition={{ delay: 0.2 }}
             >
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-                {/* Main Image */}
-                <div className="relative">
-                                     <img
-                     src={product.imageUrl}
+                                 {/* Main Image */}
+                 <div className="relative">
+                   <img
+                     src={[product.imageUrl, ...additionalImages][selectedImage]}
                      alt={product.name}
                      className="w-full h-96 object-contain bg-gray-100 dark:bg-gray-700"
                      onError={(e) => {
                        e.target.src = 'https://via.placeholder.com/600x400?text=Image+Not+Found';
                      }}
                    />
-                  <div className="absolute top-4 right-4">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg"
-                    >
-                      <Heart className="h-5 w-5 text-red-500" />
-                    </motion.button>
-                  </div>
-                </div>
+                   
+                   {/* Navigation Arrows */}
+                   <motion.button
+                     whileHover={{ scale: 1.1 }}
+                     whileTap={{ scale: 0.9 }}
+                     onClick={handlePreviousImage}
+                     className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                   >
+                     <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                   </motion.button>
+                   
+                   <motion.button
+                     whileHover={{ scale: 1.1 }}
+                     whileTap={{ scale: 0.9 }}
+                     onClick={handleNextImage}
+                     className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                   >
+                     <ArrowRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                   </motion.button>
+                   
+                   <div className="absolute top-4 right-4">
+                     <motion.button
+                       whileHover={{ scale: 1.1 }}
+                       whileTap={{ scale: 0.9 }}
+                       className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg"
+                     >
+                       <Heart className="h-5 w-5 text-red-500" />
+                     </motion.button>
+                   </div>
+                 </div>
 
                 {/* Thumbnail Images */}
                 <div className="p-4">
@@ -280,163 +257,37 @@ const ProductDetail = () => {
             </motion.div>
           </div>
 
-          {/* Tabs */}
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-12"
-          >
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-              {/* Tab Navigation */}
-              <div className="border-b border-gray-200 dark:border-gray-700">
-                <nav className="flex space-x-8 px-6">
-                  {[
-                    { id: 'overview', label: 'Overview' },
-                    { id: 'comparison', label: 'Comparison' },
-                    { id: 'reviews', label: 'Reviews' }
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                        activeTab === tab.id
-                          ? 'border-primary-600 text-primary-600 dark:text-primary-400'
-                          : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-
-              {/* Tab Content */}
-              <div className="p-6">
-                <AnimatePresence mode="wait">
-                  {activeTab === 'overview' && (
-                    <motion.div
-                      key="overview"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="space-y-6"
-                    >
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Product Overview</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Protection Features</h4>
-                          <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                            <li>• Military-grade drop protection up to 15 feet</li>
-                            <li>• Raised bezel protects camera and screen</li>
-                            <li>• Anti-slip grip pattern for secure handling</li>
-                            <li>• Shock-absorbing inner core</li>
-                          </ul>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Material Quality</h4>
-                          <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                            <li>• Premium TPU outer shell</li>
-                            <li>• Polycarbonate inner frame</li>
-                            <li>• Scratch-resistant coating</li>
-                            <li>• UV-resistant materials</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {activeTab === 'comparison' && (
-                    <motion.div
-                      key="comparison"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                    >
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Comparison with Other Cases</h3>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="border-b border-gray-200 dark:border-gray-700">
-                              <th className="text-left py-3 font-semibold text-gray-900 dark:text-white">Feature</th>
-                              <th className="text-center py-3 font-semibold text-primary-600 dark:text-primary-400">Our Case</th>
-                              <th className="text-center py-3 font-semibold text-gray-600 dark:text-gray-400">Competitor 1</th>
-                              <th className="text-center py-3 font-semibold text-gray-600 dark:text-gray-400">Competitor 2</th>
-                              <th className="text-center py-3 font-semibold text-gray-600 dark:text-gray-400">Competitor 3</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {comparisonData.map((row, index) => (
-                              <tr key={index} className="border-b border-gray-100 dark:border-gray-800">
-                                <td className="py-3 font-medium text-gray-900 dark:text-white">{row.feature}</td>
-                                <td className="py-3 text-center">
-                                  <div className="flex items-center justify-center space-x-1">
-                                    <Check className="h-4 w-4 text-green-500" />
-                                    <span className="text-primary-600 dark:text-primary-400 font-medium">{row.ourCase}</span>
-                                  </div>
-                                </td>
-                                <td className="py-3 text-center text-gray-600 dark:text-gray-400">{row.competitor1}</td>
-                                <td className="py-3 text-center text-gray-600 dark:text-gray-400">{row.competitor2}</td>
-                                <td className="py-3 text-center text-gray-600 dark:text-gray-400">{row.competitor3}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {activeTab === 'reviews' && (
-                    <motion.div
-                      key="reviews"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                    >
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Customer Reviews</h3>
-                      <div className="space-y-4">
-                        {[
-                          {
-                            name: "Sarah M.",
-                            rating: 5,
-                            date: "2 days ago",
-                            comment: "Excellent protection! Dropped my phone twice and no damage at all. The grip is perfect."
-                          },
-                          {
-                            name: "Mike R.",
-                            rating: 5,
-                            date: "1 week ago",
-                            comment: "Best case I've ever owned. Premium feel and great button responsiveness."
-                          },
-                          {
-                            name: "Lisa K.",
-                            rating: 4,
-                            date: "2 weeks ago",
-                            comment: "Great case, fits perfectly. Only giving 4 stars because it's a bit pricey."
-                          }
-                        ].map((review, index) => (
-                          <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center space-x-2">
-                                <span className="font-medium text-gray-900 dark:text-white">{review.name}</span>
-                                <div className="flex items-center space-x-1">
-                                  {[...Array(review.rating)].map((_, i) => (
-                                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                                  ))}
-                                </div>
-                              </div>
-                              <span className="text-sm text-gray-500 dark:text-gray-400">{review.date}</span>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300">{review.comment}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </motion.div>
+                     {/* Product Overview Section */}
+           <motion.div
+             initial={{ y: 50, opacity: 0 }}
+             animate={{ y: 0, opacity: 1 }}
+             transition={{ delay: 0.6 }}
+             className="mt-12"
+           >
+             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Product Overview</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div>
+                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Protection Features</h4>
+                   <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                     <li>• Military-grade drop protection up to 15 feet</li>
+                     <li>• Raised bezel protects camera and screen</li>
+                     <li>• Anti-slip grip pattern for secure handling</li>
+                     <li>• Shock-absorbing inner core</li>
+                   </ul>
+                 </div>
+                 <div>
+                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Material Quality</h4>
+                   <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                     <li>• Premium TPU outer shell</li>
+                     <li>• Polycarbonate inner frame</li>
+                     <li>• Scratch-resistant coating</li>
+                     <li>• UV-resistant materials</li>
+                   </ul>
+                 </div>
+               </div>
+             </div>
+           </motion.div>
         </div>
       </div>
     </>
